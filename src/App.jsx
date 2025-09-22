@@ -1,9 +1,12 @@
+import "antd/dist/reset.css";
+import ToDoPage from "./pages/ToDoPage";
+
 const App = () => {
-  return(
+  return (
     <>
-    <h1>Hello keshav</h1>
+      <ToDoPage></ToDoPage>
     </>
-  )
-}
+  );
+};
 
 export default App;
