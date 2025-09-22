@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Input, List, Typography } from "antd";
+import { Button, Input, List, Typography, Checkbox } from "antd";
 const { TextArea } = Input;
 const ToDoPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -13,14 +13,32 @@ const ToDoPage = () => {
   };
   const handleSubmit = () => {
     if (newTask.trim() === "") return alert("Please enter a task");
-    setTasks([...tasks, newTask]);
+    const newTaskObj = {
+      id: Date.now(),
+      title: newTask,
+      content: content,
+      isComplete: false,
+    };
+    setTasks((prev) => [...prev, newTaskObj]);
     setNewTask("");
+    setContent("");
     setShowInput(false);
   };
 
-  const handleDelete = (indexToDelete) => {
-    const updateTasks = tasks.filter((_, index) => index !== indexToDelete);
-    setTasks(updateTasks);
+  const toggleComplete = (taskId) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((currentTaskObj) =>
+        currentTaskObj.id === taskId
+          ? { ...currentTaskObj, isComplete: !currentTaskObj.isComplete }
+          : currentTaskObj
+      )
+    );
+  };
+
+  const handleDelete = (taskId) => {
+    setTasks((prev) =>
+      prev.filter((currentTaskObj) => currentTaskObj.id != taskId)
+    );
   };
 
   return (
@@ -70,14 +88,30 @@ const ToDoPage = () => {
             style={style.ListItem}
             key={index}
             actions={[
-              <Button type="primary" danger onClick={() => handleDelete(index)}>
+              <Button
+                type="primary"
+                danger
+                onClick={() => handleDelete(task.id)}
+              >
                 {" "}
                 delete{" "}
               </Button>,
             ]}
           >
-            {" "}
-            {task}
+            <div style={style.ListItemInnerContainer}>
+              <Checkbox
+                checked={task.isComplete}
+                onChange={() => toggleComplete(task.id)}
+              />
+              <div
+                style={
+                  task.isComplete ? style.CompleteTask : style.InCompleteTask
+                }
+              >
+                <div>{task.title}</div>
+                <div>{task.content}</div>
+              </div>
+            </div>
           </List.Item>
         )}
       />
@@ -131,5 +165,19 @@ const style = {
     display: "flex",
     alignItems: "center",
     backgroundColor: "#4CAF50",
+  },
+  ListItemInnerContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  CompleteTask: {
+    marginLeft: 10,
+    textDecoration: "line-through",
+    opacity: 0.6,
+  },
+  InCompleteTask: {
+    marginLeft: 10,
+    textDecoration: "none",
+    opacity: 1,
   },
 };
